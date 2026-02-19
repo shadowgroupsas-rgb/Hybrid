@@ -1,0 +1,7 @@
+backend/node_modules
+node_modules
+backend/dist
+coverage
+.env
+backend/.env
+backend/test-results
