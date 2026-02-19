@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CheckIn } from '../entities/check-in.entity';
+import { CheckIn, CheckInType } from '../entities/check-in.entity';
 import { Office } from '../entities/office.entity';
+import { Employee, EmployeeStatus } from '../entities/employee.entity';
 
 @Injectable()
 export class CheckInService {
@@ -11,17 +12,21 @@ export class CheckInService {
     private checkInRepository: Repository<CheckIn>,
     @InjectRepository(Office)
     private officeRepository: Repository<Office>,
+    @InjectRepository(Employee)
+    private employeeRepository: Repository<Employee>,
   ) {}
 
   async create(data: any): Promise<CheckIn> {
-    const { employeeId, type, latitude, longitude } = data;
+    const { employeeId, type, latitude, longitude, email } = data;
+    const now = new Date();
 
-    // Check if within any office radius
-    // PostGIS ST_DWithin(geometry, geometry, distance_in_meters)
-    // We need to construct a point from lat/lon
-    // Assuming SRID 4326 (WGS84) for lat/lon
+    // 1. Resolve Employee
+    let employee: Employee | null = null;
+    if (email) {
+      employee = await this.employeeRepository.findOneBy({ email });
+    }
 
-    // Find offices where distance is within radius
+    // 2. Geofencing Logic
     const offices = await this.officeRepository
       .createQueryBuilder('office')
       .where(
@@ -36,16 +41,40 @@ export class CheckInService {
 
     const isRemote = offices.length === 0;
 
+    // 3. Night Overtime Logic (19:00 - 06:00)
+    const hour = now.getHours();
+    const isNightOvertime = hour >= 19 || hour < 6;
+
+    // 4. Day of Week
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayOfWeek = days[now.getDay()];
+
     const checkIn = this.checkInRepository.create({
-      employeeId,
+      employeeId, // Keep for legacy
+      employee: employee || undefined,
+      timestamp: now,
       type,
       location: {
         type: 'Point',
         coordinates: [longitude, latitude],
       },
-      isRemote,
+      isRemote: isRemote,
+      isNightOvertime: isNightOvertime,
+      dayOfWeek: dayOfWeek,
     });
 
-    return this.checkInRepository.save(checkIn);
+    const savedCheckIn = await this.checkInRepository.save(checkIn);
+
+    // 5. Update Employee Status
+    if (employee) {
+      if (type === CheckInType.IN) {
+        employee.status = isNightOvertime ? EmployeeStatus.OVERTIME : EmployeeStatus.WORKING;
+      } else {
+        employee.status = EmployeeStatus.OFFLINE;
+      }
+      await this.employeeRepository.save(employee);
+    }
+
+    return savedCheckIn;
   }
 }

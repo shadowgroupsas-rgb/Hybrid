@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Employee } from './employee.entity';
 
 export enum CheckInType {
   IN = 'IN',
@@ -10,8 +11,8 @@ export class CheckIn {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  employeeId: string;
+  @Column({ nullable: true })
+  employeeId: string; // Keeping this for backward compat or direct reference
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;
@@ -31,4 +32,13 @@ export class CheckIn {
 
   @Column({ default: false })
   isRemote: boolean;
+
+  @Column({ default: false })
+  isNightOvertime: boolean;
+
+  @Column({ nullable: true })
+  dayOfWeek: string;
+
+  @ManyToOne(() => Employee, (employee) => employee.checkIns, { nullable: true })
+  employee: Employee;
 }

@@ -1,12 +1,14 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { CheckInService } from './check-in.service';
 import { CreateCheckInDto } from './create-check-in.dto';
+import { FirebaseAuthGuard } from './firebase-auth.guard'; // Import the guard
 
 @Controller('check-ins')
 export class CheckInController {
   constructor(private readonly checkInService: CheckInService) {}
 
   @Post()
+  @UseGuards(FirebaseAuthGuard) // Protect this endpoint
   create(@Body() createCheckInDto: CreateCheckInDto) {
     return this.checkInService.create(createCheckInDto);
   }

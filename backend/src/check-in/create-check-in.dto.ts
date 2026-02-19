@@ -1,5 +1,6 @@
 export class CreateCheckInDto {
-  employeeId: string;
+  employeeId?: string;
+  email?: string;
   type: string;
   latitude: number;
   longitude: number;
