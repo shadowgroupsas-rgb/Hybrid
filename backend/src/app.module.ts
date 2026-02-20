@@ -20,10 +20,11 @@ const adminJsModule = async (): Promise<DynamicModule> => {
   const { Database, Resource } = await import('@adminjs/typeorm');
   const AdminJS = await import('adminjs');
 
-  // AdminJS import might return the class directly or a module with 'default'
-  // We check both cases to be safe across different environments
+  // Ensure we get the correct class reference, handling default exports if present
   const AdminJSClass = AdminJS.default || AdminJS;
 
+  // Register the adapter on the AdminJS class itself
+  // @ts-ignore
   AdminJSClass.registerAdapter({ Database, Resource });
 
   return AdminModule.createAdminAsync({
