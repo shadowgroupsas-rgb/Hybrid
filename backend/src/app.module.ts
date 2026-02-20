@@ -1,23 +1,54 @@
-import { Module } from '@nestjs/common';
+import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminModule } from '@adminjs/nestjs';
-import AdminJS from 'adminjs';
-import { Database, Resource } from '@adminjs/typeorm';
 
-import { CheckIn } from './entities/check-in.entity.js';
-import { Office } from './entities/office.entity.js';
-import { Employee } from './entities/employee.entity.js';
-import { City } from './entities/city.entity.js';
+import { CheckIn } from './entities/check-in.entity';
+import { Office } from './entities/office.entity';
+import { Employee } from './entities/employee.entity';
+import { City } from './entities/city.entity';
 
-import { IntegrationsModule } from './integrations/integrations.module.js';
-import { CheckInModule } from './check-in/check-in.module.js';
-import { CityModule } from './city/city.module.js';
-import { EmployeeModule } from './employee/employee.module.js';
-import { NotificationModule } from './notification/notification.module.js';
+import { IntegrationsModule } from './integrations/integrations.module';
+import { CheckInModule } from './check-in/check-in.module';
+import { CityModule } from './city/city.module';
+import { EmployeeModule } from './employee/employee.module';
+import { NotificationModule } from './notification/notification.module';
+import { AdminApiModule } from './admin/admin.module';
 
-// Explicitly register the adapter here for ESM
-AdminJS.registerAdapter({ Database, Resource });
+// Helper for ESM imports in CommonJS
+const adminJsModule = async (): Promise<DynamicModule> => {
+  const { AdminModule } = await import('@adminjs/nestjs');
+  const { Database, Resource } = await import('@adminjs/typeorm');
+  const { default: AdminJS } = await import('adminjs');
+
+  AdminJS.registerAdapter({ Database, Resource });
+
+  return AdminModule.createAdminAsync({
+    useFactory: async () => ({
+      adminJsOptions: {
+        rootPath: '/admin',
+        resources: [CheckIn, Office, Employee, City],
+        branding: {
+          companyName: 'Copower Energy Solutions',
+          logo: '/logo-copower.webp',
+          theme: {
+            colors: {
+              primary100: '#00E5FF',
+              primary80: '#00B8D4',
+              primary60: '#0091EA',
+              primary40: '#006064',
+              primary20: '#004D40',
+              accent: '#FF0055',
+              bg: '#0a0a0a',
+            },
+          },
+        },
+        dashboard: {
+          handler: async () => ({ message: 'Welcome to Copower God\'s Eye System' }),
+        },
+      },
+    }),
+  });
+};
 
 @Module({
   imports: [
@@ -36,37 +67,13 @@ AdminJS.registerAdapter({ Database, Resource });
       synchronize: true, // Auto-create tables (dev only)
       logging: false,
     }),
-    AdminModule.createAdmin({
-        adminJsOptions: {
-          rootPath: '/admin',
-          resources: [CheckIn, Office, Employee, City],
-          branding: {
-            companyName: 'Copower Energy Solutions',
-            logo: '/logo-copower.webp',
-            theme: {
-              colors: {
-                primary100: '#1976D2',
-                primary80: '#1565C0',
-                primary60: '#0D47A1',
-                primary40: '#002171',
-                primary20: '#5472d3',
-                accent: '#D32F2F',
-                hoverBg: '#1E1E1E',
-              },
-            },
-          },
-          dashboard: {
-            handler: async () => {
-              return { message: 'Welcome to Copower God\'s Eye System' };
-            },
-          }
-        },
-    }),
     IntegrationsModule,
     CheckInModule,
     CityModule,
     EmployeeModule,
     NotificationModule,
+    AdminApiModule,
+    adminJsModule() as unknown as Promise<DynamicModule>, // NestJS typings quirk with async modules
   ],
   controllers: [],
   providers: [],
