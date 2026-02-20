@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { CheckInService } from './check-in.service';
-import { CreateCheckInDto } from './create-check-in.dto';
-import { FirebaseAuthGuard } from './firebase-auth.guard'; // Import the guard
+import { CheckInService } from './check-in.service.js';
+import { CreateCheckInDto } from './create-check-in.dto.js';
+import { FirebaseAuthGuard } from './firebase-auth.guard.js'; // Import the guard
 
 @Controller('check-ins')
 export class CheckInController {

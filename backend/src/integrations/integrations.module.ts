@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CheckIn } from '../entities/check-in.entity';
-import { CataleyaController } from './cataleya.controller';
+import { CheckIn } from '../entities/check-in.entity.js';
+import { CataleyaController } from './cataleya.controller.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CheckIn])],

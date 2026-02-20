@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
-import { Employee, EmployeeStatus } from './entities/employee.entity';
-import { City } from './entities/city.entity';
-import { CheckIn } from './entities/check-in.entity';
-import { Office } from './entities/office.entity';
+import { Employee, EmployeeStatus } from './entities/employee.entity.js';
+import { City } from './entities/city.entity.js';
+import { CheckIn } from './entities/check-in.entity.js';
+import { Office } from './entities/office.entity.js';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as QRCode from 'qrcode';

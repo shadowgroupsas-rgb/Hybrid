@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CheckIn, CheckInType } from '../entities/check-in.entity';
-import { Office } from '../entities/office.entity';
-import { Employee, EmployeeStatus } from '../entities/employee.entity';
+import { CheckIn, CheckInType } from '../entities/check-in.entity.js';
+import { Office } from '../entities/office.entity.js';
+import { Employee, EmployeeStatus } from '../entities/employee.entity.js';
 
 @Injectable()
 export class CheckInService {

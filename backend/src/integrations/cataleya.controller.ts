@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CheckIn } from '../entities/check-in.entity';
-import { ApiKeyGuard } from './api-key.guard';
+import { CheckIn } from '../entities/check-in.entity.js';
+import { ApiKeyGuard } from './api-key.guard.js';
 
 @Controller('integrations/cataleya')
 export class CataleyaController {

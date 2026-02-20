@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
-import { EmployeeService } from './employee.service';
+import { EmployeeService } from './employee.service.js';
 
 @Controller('employees')
 export class EmployeeController {

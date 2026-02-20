@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CheckIn } from '../entities/check-in.entity';
-import { Office } from '../entities/office.entity';
-import { Employee } from '../entities/employee.entity';
-import { CheckInService } from './check-in.service';
-import { CheckInController } from './check-in.controller';
+import { CheckIn } from '../entities/check-in.entity.js';
+import { Office } from '../entities/office.entity.js';
+import { Employee } from '../entities/employee.entity.js';
+import { CheckInService } from './check-in.service.js';
+import { CheckInController } from './check-in.controller.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CheckIn, Office, Employee])],

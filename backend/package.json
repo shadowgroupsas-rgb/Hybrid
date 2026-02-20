@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "0.0.1",
+  "type": "module",
   "description": "",
   "author": "",
   "private": true,
@@ -18,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "ts-node src/seed.ts"
+    "seed": "node --loader ts-node/esm src/seed.ts"
   },
   "dependencies": {
     "@adminjs/express": "^6.1.1",

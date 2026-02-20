@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Employee } from './employee.entity';
+import { Employee } from './employee.entity.js';
 
 export enum CheckInType {
   IN = 'IN',
