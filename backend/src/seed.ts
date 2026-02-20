@@ -21,6 +21,7 @@ const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB || 'copower',
   entities: [Employee, City, CheckIn, Office], // Include ALL entities to resolve relations
   synchronize: false, // Do not sync schema here, assume app has run
+  ssl: process.env.DB_SSL === 'true' || process.env.DB_HOST?.includes('rds.amazonaws.com') ? { rejectUnauthorized: false } : false,
 });
 
 async function bootstrap() {
