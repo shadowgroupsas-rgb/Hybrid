@@ -61,9 +61,9 @@ const adminJsModule = async (): Promise<DynamicModule> => {
       password: process.env.POSTGRES_PASSWORD || 'postgres',
       database: process.env.POSTGRES_DB || 'copower',
       entities: [CheckIn, Office, Employee, City],
-      synchronize: true, // Auto-create tables (dev only)
+      synchronize: process.env.DB_SYNC === 'true', // Auto-create tables (controlled by env)
       logging: false,
-      ssl: process.env.DB_SSL === 'true' || process.env.DB_HOST?.includes('rds.amazonaws.com') ? { rejectUnauthorized: false } : false,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     IntegrationsModule,
     CheckInModule,
