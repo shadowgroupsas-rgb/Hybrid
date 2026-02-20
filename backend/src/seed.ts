@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Employee, EmployeeStatus } from './entities/employee.entity';
 import { City } from './entities/city.entity';
+import { CheckIn } from './entities/check-in.entity';
+import { Office } from './entities/office.entity';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as QRCode from 'qrcode';
@@ -17,7 +19,7 @@ const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'postgres',
   database: process.env.POSTGRES_DB || 'copower',
-  entities: [Employee, City],
+  entities: [Employee, City, CheckIn, Office], // Include ALL entities to resolve relations
   synchronize: false, // Do not sync schema here, assume app has run
 });
 
