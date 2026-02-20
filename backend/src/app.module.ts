@@ -17,15 +17,7 @@ import { AdminApiModule } from './admin/admin.module';
 // Helper for ESM imports in CommonJS
 const adminJsModule = async (): Promise<DynamicModule> => {
   const { AdminModule } = await import('@adminjs/nestjs');
-  const { Database, Resource } = await import('@adminjs/typeorm');
-  const AdminJS = await import('adminjs');
-
-  // Ensure we get the correct class reference, handling default exports if present
-  const AdminJSClass = AdminJS.default || AdminJS;
-
-  // Register the adapter on the AdminJS class itself
-  // @ts-ignore
-  AdminJSClass.registerAdapter({ Database, Resource });
+  // Adapter registration is now handled in main.ts to avoid race conditions
 
   return AdminModule.createAdminAsync({
     useFactory: async () => ({
