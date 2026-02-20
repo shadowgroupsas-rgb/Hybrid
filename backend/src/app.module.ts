@@ -66,6 +66,7 @@ const adminJsModule = async (): Promise<DynamicModule> => {
       entities: [CheckIn, Office, Employee, City],
       synchronize: true, // Auto-create tables (dev only)
       logging: false,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     }),
     IntegrationsModule,
     CheckInModule,
