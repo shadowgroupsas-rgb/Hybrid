@@ -18,9 +18,13 @@ import { AdminApiModule } from './admin/admin.module';
 const adminJsModule = async (): Promise<DynamicModule> => {
   const { AdminModule } = await import('@adminjs/nestjs');
   const { Database, Resource } = await import('@adminjs/typeorm');
-  const { default: AdminJS } = await import('adminjs');
+  const AdminJS = await import('adminjs');
 
-  AdminJS.registerAdapter({ Database, Resource });
+  // AdminJS import might return the class directly or a module with 'default'
+  // We check both cases to be safe across different environments
+  const AdminJSClass = AdminJS.default || AdminJS;
+
+  AdminJSClass.registerAdapter({ Database, Resource });
 
   return AdminModule.createAdminAsync({
     useFactory: async () => ({
@@ -74,7 +78,7 @@ const adminJsModule = async (): Promise<DynamicModule> => {
     EmployeeModule,
     NotificationModule,
     AdminApiModule,
-    adminJsModule() as unknown as Promise<DynamicModule>, // NestJS typings quirk with async modules
+    adminJsModule() as unknown as Promise<DynamicModule>,
   ],
   controllers: [],
   providers: [],
