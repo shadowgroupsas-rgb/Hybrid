@@ -31,6 +31,11 @@ El sistema sigue una arquitectura híbrida moderna diseñada para escalabilidad 
 
 ## Configuración Local
 
+### Guías de Instalación
+
+*   **[Windows 11 (Paso a Paso)](RUN_LOCAL_WINDOWS.md):** Instrucciones detalladas para ejecutar en Windows.
+*   **Linux/Mac:** Sigue los pasos generales a continuación.
+
 1.  Asegúrate de tener Docker y Node.js instalados.
 2.  Clona el repositorio.
 3.  Ejecuta `docker-compose up -d` para levantar la base de datos PostgreSQL + PostGIS.
