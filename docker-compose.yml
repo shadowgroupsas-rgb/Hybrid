@@ -10,13 +10,18 @@ services:
       # Networking
       DB_HOST: db
       DB_PORT: 5432
-      # Credentials
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      # Credentials (with defaults for local run without .env)
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-cronos_dev}
       # App Config
       DB_SSL: "false"
       DB_SYNC: "true"
+      # Admin Defaults
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@copower.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      JWT_SECRET: ${JWT_SECRET:-secreto_desarrollo_local}
+      SESSION_SECRET: ${SESSION_SECRET:-secreto_session_local}
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules

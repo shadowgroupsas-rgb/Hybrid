@@ -122,7 +122,7 @@ const adminJsModule = async (): Promise<DynamicModule> => {
           },
         },
         dashboard: {
-          handler: async () => ({ message: 'Welcome to Cronos - God\'s Eye System' }),
+          handler: async () => ({ message: 'Bienvenido a Cronos - Sistema Ojo de Dios' }),
         },
       },
       auth: {

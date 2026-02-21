@@ -14,12 +14,13 @@ RUN npm install
 RUN apk add --no-cache tzdata
 ENV TZ=America/Bogota
 
-# Copy source code from backend directory to container root
-COPY backend/ .
-
-# Explicitly ensure config files are present (fix for some Docker contexts)
+# Copy essential config files FIRST to ensure they are available and cache bust
+COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 COPY backend/nest-cli.json ./
+
+# Copy source code from backend directory to container root
+COPY backend/ .
 
 # Debug: List files to ensure tsconfig.json is present (helps diagnose build issues)
 RUN ls -la
