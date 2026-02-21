@@ -5,6 +5,7 @@ FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copy package files from backend directory to container root
+# We copy ONLY package.json/lock first to leverage Docker cache for npm install
 COPY backend/package*.json ./
 
 # Install dependencies (including devDependencies for build)
@@ -14,12 +15,8 @@ RUN npm install
 RUN apk add --no-cache tzdata
 ENV TZ=America/Bogota
 
-# Copy essential config files FIRST to ensure they are available and cache bust
-COPY backend/package*.json ./
-COPY backend/tsconfig.json ./
-COPY backend/nest-cli.json ./
-
 # Copy source code from backend directory to container root
+# This includes tsconfig.json, nest-cli.json, src/, etc.
 COPY backend/ .
 
 # Debug: List files to ensure tsconfig.json is present (helps diagnose build issues)
