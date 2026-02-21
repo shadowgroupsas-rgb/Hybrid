@@ -17,6 +17,7 @@ import { AdminApiModule } from './admin/admin.module';
 // Helper for ESM imports in CommonJS
 const adminJsModule = async (): Promise<DynamicModule> => {
   const { AdminModule } = await import('@adminjs/nestjs');
+
   // Adapter registration is now handled in main.ts to avoid race conditions
 
   return AdminModule.createAdminAsync({
@@ -41,6 +42,28 @@ const adminJsModule = async (): Promise<DynamicModule> => {
         },
         dashboard: {
           handler: async () => ({ message: 'Welcome to Copower God\'s Eye System' }),
+        },
+      },
+      auth: {
+        authenticate: async (email, password) => {
+          const adminEmail = process.env.ADMIN_EMAIL || 'admin@copower.com';
+          const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+          if (email === adminEmail && password === adminPassword) {
+            return { email, role: 'admin' };
+          }
+          return null;
+        },
+        cookieName: 'adminjs',
+        cookiePassword: process.env.SESSION_SECRET || 'super-secret-session-key',
+      },
+      sessionOptions: {
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET || 'super-secret-session-key',
+        cookie: {
+          secure: process.env.NODE_ENV === 'production', // Secure cookies in production (requires trust proxy)
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24, // 1 day
         },
       },
     }),

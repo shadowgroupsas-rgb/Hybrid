@@ -10,6 +10,10 @@ COPY backend/package*.json ./
 # Install dependencies (including devDependencies for build)
 RUN npm install
 
+# Install tzdata for timezone support
+RUN apk add --no-cache tzdata
+ENV TZ=America/Bogota
+
 # Copy source code from backend directory to container root
 COPY backend/ .
 
@@ -27,6 +31,10 @@ COPY backend/package*.json ./
 
 # Install only production dependencies
 RUN npm install --omit=dev
+
+# Install tzdata for timezone support
+RUN apk add --no-cache tzdata
+ENV TZ=America/Bogota
 
 # Copy built artifacts from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist

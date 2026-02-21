@@ -9,6 +9,7 @@ services:
     env_file:
       - .env
     environment:
+      TZ: America/Bogota
       # Explicit overrides for Docker networking
       DB_HOST: db
       DB_PORT: 5432

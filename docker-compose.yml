@@ -6,6 +6,7 @@ services:
     command: npm run start:dev
     environment:
       NODE_ENV: development
+      TZ: America/Bogota
       # Networking
       DB_HOST: db
       DB_PORT: 5432
