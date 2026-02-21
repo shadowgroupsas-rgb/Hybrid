@@ -17,6 +17,13 @@ ENV TZ=America/Bogota
 # Copy source code from backend directory to container root
 COPY backend/ .
 
+# Explicitly ensure config files are present (fix for some Docker contexts)
+COPY backend/tsconfig.json ./
+COPY backend/nest-cli.json ./
+
+# Debug: List files to ensure tsconfig.json is present (helps diagnose build issues)
+RUN ls -la
+
 # Build the application
 RUN npm run build
 
