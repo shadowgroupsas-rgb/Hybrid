@@ -16,8 +16,11 @@ RUN apk add --no-cache tzdata
 ENV TZ=America/Bogota
 
 # Copy source code from backend directory to container root
-# This includes tsconfig.json, nest-cli.json, src/, etc.
 COPY backend/ .
+
+# Explicitly copy configuration files again to be absolutely sure
+COPY backend/tsconfig.json ./
+COPY backend/nest-cli.json ./
 
 # Debug: List files to ensure tsconfig.json is present (helps diagnose build issues)
 RUN ls -la
