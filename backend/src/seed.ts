@@ -1,8 +1,9 @@
 import { DataSource } from 'typeorm';
-import { Employee, EmployeeStatus } from './entities/employee.entity.js';
+import { Employee, EmployeeStatus, EmployeeRole } from './entities/employee.entity.js';
 import { City } from './entities/city.entity.js';
 import { CheckIn } from './entities/check-in.entity.js';
 import { Office } from './entities/office.entity.js';
+import { Department } from './entities/department.entity.js';
 import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as QRCode from 'qrcode';
@@ -19,7 +20,7 @@ const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'postgres',
   database: process.env.POSTGRES_DB || 'copower',
-  entities: [Employee, City, CheckIn, Office], // Include ALL entities to resolve relations
+  entities: [Employee, City, CheckIn, Office, Department], // Include ALL entities to resolve relations
   synchronize: false, // Do not sync schema here, assume app has run
   ssl: process.env.DB_SSL === 'true' || process.env.DB_HOST?.includes('rds.amazonaws.com') ? { rejectUnauthorized: false } : false,
 });
@@ -31,25 +32,47 @@ async function bootstrap() {
 
     const employeeRepo = AppDataSource.getRepository(Employee);
     const cityRepo = AppDataSource.getRepository(City);
+    const departmentRepo = AppDataSource.getRepository(Department);
 
-    // 1. Seed Initial Admin / Super User
+    // 1. Seed Departments
+    const deptNames = ['Electrical Testing', 'Human Resources', 'Administration'];
+    for (const name of deptNames) {
+      let dept = await departmentRepo.findOneBy({ name });
+      if (!dept) {
+        console.log(`Creating Department: ${name}`);
+        dept = departmentRepo.create({ name });
+        await departmentRepo.save(dept);
+      }
+    }
+
+    // 2. Seed Initial Admin / Super User
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@copower.com';
+    const adminPasswordRaw = process.env.ADMIN_PASSWORD || 'admin123';
+
     const existingAdmin = await employeeRepo.findOneBy({ email: adminEmail });
 
     if (!existingAdmin) {
       console.log(`Creating Super Admin: ${adminEmail}`);
+      const hashedPassword = await bcrypt.hash(adminPasswordRaw, 10);
       const admin = employeeRepo.create({
         email: adminEmail,
         name: 'Super Admin',
         status: EmployeeStatus.OFFLINE,
+        role: EmployeeRole.SUPER_ADMIN,
+        password: hashedPassword,
       });
       await employeeRepo.save(admin);
       console.log('Super Admin created successfully.');
     } else {
-      console.log('Super Admin already exists.');
+      console.log('Super Admin already exists. Updating role and password if needed...');
+       // Ensure super admin has correct role and password (optional, good for dev)
+       const hashedPassword = await bcrypt.hash(adminPasswordRaw, 10);
+       existingAdmin.role = EmployeeRole.SUPER_ADMIN;
+       existingAdmin.password = hashedPassword;
+       await employeeRepo.save(existingAdmin);
     }
 
-    // 2. Seed Initial Cities (Example)
+    // 3. Seed Initial Cities (Example)
     const citiesToSeed = [
       { name: 'Cartagena', duration: 20 },
       { name: 'Bogota', duration: 30 },

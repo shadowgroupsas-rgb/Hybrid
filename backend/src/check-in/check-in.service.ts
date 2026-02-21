@@ -17,7 +17,7 @@ export class CheckInService {
   ) {}
 
   async create(data: any): Promise<CheckIn> {
-    const { employeeId, type, latitude, longitude, email } = data;
+    const { employeeId, type, latitude, longitude, email, activityDescription } = data;
     const now = new Date();
 
     // 1. Resolve Employee
@@ -61,6 +61,7 @@ export class CheckInService {
       isRemote: isRemote,
       isNightOvertime: isNightOvertime,
       dayOfWeek: dayOfWeek,
+      activityDescription: type === CheckInType.OUT ? activityDescription : null,
     });
 
     const savedCheckIn = await this.checkInRepository.save(checkIn);

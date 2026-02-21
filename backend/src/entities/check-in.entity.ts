@@ -39,6 +39,9 @@ export class CheckIn {
   @Column({ nullable: true })
   dayOfWeek: string;
 
+  @Column({ type: 'text', nullable: true })
+  activityDescription: string;
+
   @ManyToOne(() => Employee, (employee) => employee.checkIns, { nullable: true })
   employee: Employee;
 }
