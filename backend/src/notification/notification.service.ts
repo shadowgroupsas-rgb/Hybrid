@@ -12,7 +12,7 @@ export class NotificationService implements OnModuleInit {
         });
         console.log('Firebase Admin Initialized');
       } catch (error) {
-        console.warn('Firebase Admin initialization failed (likely missing credentials). Push notifications will be mocked.', error.message);
+      console.warn('Fallo la inicialización de Firebase Admin (probablemente faltan credenciales). Las notificaciones push serán simuladas.', error.message);
       }
     }
   }

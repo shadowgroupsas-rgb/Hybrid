@@ -5,13 +5,25 @@ FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copy package files from backend directory to container root
+# We copy ONLY package.json/lock first to leverage Docker cache for npm install
 COPY backend/package*.json ./
 
 # Install dependencies (including devDependencies for build)
 RUN npm install
 
+# Install tzdata for timezone support
+RUN apk add --no-cache tzdata
+ENV TZ=America/Bogota
+
 # Copy source code from backend directory to container root
 COPY backend/ .
+
+# Explicitly copy configuration files again to be absolutely sure
+COPY backend/tsconfig.json ./
+COPY backend/nest-cli.json ./
+
+# Debug: List files to ensure tsconfig.json is present (helps diagnose build issues)
+RUN ls -la
 
 # Build the application
 RUN npm run build
@@ -27,6 +39,10 @@ COPY backend/package*.json ./
 
 # Install only production dependencies
 RUN npm install --omit=dev
+
+# Install tzdata for timezone support
+RUN apk add --no-cache tzdata
+ENV TZ=America/Bogota
 
 # Copy built artifacts from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist

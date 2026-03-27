@@ -16,6 +16,17 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS for frontend connectivity (Flutter, Local Dev, etc.)
+  app.enableCors({
+    origin: '*', // Allow all origins for now (adjust for production if needed)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  // Trust proxy (Nginx, Load Balancer) for secure cookies and correct IP detection
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', 1);
+
   // Allow external connections (e.g. from App Runner load balancer)
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
